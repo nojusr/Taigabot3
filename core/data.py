@@ -106,10 +106,7 @@ class ParsedRaw:
                 if ' ' in self.command and self.command != ' ':
                     self.command = self.command.split()[0]
 
-                print ("SELF.TARGET CHECK")
-                print(self.target)
                 if self.target[0] != '#':
-                    print("LACKING HASHTAG, PM DETECTED, SWITCHING")
                     self.target = self.nickname
 
 
