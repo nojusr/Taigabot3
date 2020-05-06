@@ -22,10 +22,15 @@ from core import db, hook
 
 usr_attributes: List[str] = ['homescreen', 'desktop', 'battlestation',
                              'waifu', 'husbando', 'selfie']
-
+attr_clear = ['delete', '-del']
 
 def _update_user_attribute(conn, attr_name, attr_value, username):
     db.set_cell(conn, 'users', attr_name, attr_value, 'nick', username)
+    db.ccache()
+    return
+
+def _clear_user_attribute(conn, attr_name, username):
+    db.set_cell(conn, 'users', attr_name, '', 'nick', username)
     db.ccache()
     return
 
@@ -33,7 +38,7 @@ def _update_user_attribute(conn, attr_name, attr_value, username):
 def _get_user_attribute(conn, attr_name, username):
     attr = db.get_cell(conn, 'users', attr_name, 'nick', username)
 
-    if attr[0][0] is None:
+    if attr[0][0] is None or attr[0][0] == '':
         print('returning error str')
         return f'No {attr_name} found for {username}.'
     else:
@@ -66,6 +71,14 @@ async def stat(client, data):
                                         data.nickname)
         print(user_attr)
         asyncio.create_task(client.message(data.target, user_attr))
+        return
+
+    """ check if user is trying to delete one of their attributes """
+    if message[0] in attr_clear:
+        _clear_user_attribute(conn, command, data.nickname)
+        asyncio.create_task(client.notice(
+                        data.nickname,
+                        f'Cleared {data.command} for {data.nickname}'))
         return
 
     """ check if user is trying to find another user's attribute """
