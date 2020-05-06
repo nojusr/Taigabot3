@@ -1,18 +1,4 @@
 # location plugins
-# Copyright (C) 2019  Anthony DeDominic <adedomin@gmail.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # currently supporting: time, weather
 # author: afloat
 #
@@ -38,7 +24,7 @@ forecast_days = 2
 def _get_apixu_api_key(client):
     """This function tries to get the APIXU appID from config"""
     try:
-        APIXU_KEY = client.bot.config['api_keys']['APIXU']
+        APIXU_KEY = client.bot.config['api_keys']['weatherstack']
         return APIXU_KEY
     except KeyError:
         return ''
@@ -52,6 +38,7 @@ def _update_user_location(conn, location_column, location_value, username):
 
 def _get_user_location(conn, location_column, username):
     location = db.get_cell(conn, 'users', location_column, 'nick', username)
+    #print( location[0][0] );
     try:
         if location[0][0] is None or len(location[0][0]) == 0:
                 return None
@@ -62,21 +49,22 @@ def _get_user_location(conn, location_column, username):
 
 
 def _build_time_response(j_weather):
-    return "[" + j_weather["location"]["tz_id"] + "] " + str(j_weather["location"]["localtime"]) + " in " + j_weather["location"]["name"]
+    return "[" + j_weather["location"]["timezone_id"] + "] " + str(j_weather["location"]["localtime"]) + " in " + j_weather["location"]["name"]
 
 
 def _build_weather_response(j_weather):
     high = "High: "
     low = "Low: "
-
+    print(j_weather)
     location = "\02" + j_weather["location"]["name"] + ", " + j_weather["location"]["region"] + ", " + j_weather["location"]["country"] + "\02"
     cur_qualifier = "\02" + " - Current: " + "\02"
-    cur_cond = j_weather["current"]["condition"]["text"] + ", " + str(int(j_weather["current"]["temp_c"])) + "C/" + str(int(j_weather["current"]["temp_f"])) + "F, "
+    cur_cond = j_weather["current"]["weather_descriptions"][0] + ", " + str(int(j_weather["current"]["temperature"])) + "C/"
     cur_humidity = "Humidity: " + str(j_weather["current"]["humidity"]) + "%, "
-    cur_wind = "Wind: " + str(int(j_weather["current"]["wind_kph"])) + "KPH/" + str(int(j_weather["current"]["wind_mph"])) + "MPH, "
-    cur_uv = "UV: " + str(int(j_weather["current"]["uv"])) + ". "
+    cur_wind = "Wind: " + str(int(j_weather["current"]["wind_speed"])) + "KPH/"
+    cur_uv = "UV: " + str(int(j_weather["current"]["uv_index"])) + ". "
     current = location + cur_qualifier + cur_cond + cur_humidity + cur_wind + cur_uv
 
+    """
     def _build_forecast_response(days):
         forecast_responses = []
         day_qualifiers = ["Today", "Tomorrow", "Two Days Away", "Three Days Away", "Four Days Away"]
@@ -86,8 +74,9 @@ def _build_weather_response(j_weather):
         return forecast_responses
 
     forecasts = ' '.join(_build_forecast_response(forecast_days))
+    """
 
-    return current + forecasts
+    return current
 
 
 @hook.hook('init', ['locationinit'])
@@ -110,12 +99,12 @@ async def weather(client, data):
     apixu_key = _get_apixu_api_key(client)
     if apixu_key == '':
         asyncio.create_task(client.message(data.target,
-                                           ('No APIXU appID found. '
+                                           ('No weatherstack API key found. '
                                             'Ask your nearest bot admin to '
                                             'get one and add it into the config.')))
         return
 
-    CURRENT_WEATHER_URL = "https://api.apixu.com/v1/forecast.json?key=" + apixu_key + "&q="
+    CURRENT_WEATHER_URL = "http://api.weatherstack.com/current?access_key=" + apixu_key + "&query="
 
 
     test_url = ""
@@ -136,6 +125,8 @@ async def weather(client, data):
 
     else:
         loc = _get_user_location(conn, location_column, data.nickname)
+        print(loc)
+        print(type(loc))
         if loc is None:
             asyncio.create_task(client.message(data.target, "Invalid or unset location."))
             return
