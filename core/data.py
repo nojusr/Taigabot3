@@ -83,6 +83,9 @@ class ParsedRaw:
         prefix, raw_command, args = parsemsg(self.raw)
         self.raw_command: str = raw_command
 
+
+
+
         if raw_command in {'PING', 'AWAY', 'QUIT'}:
             self.message = ' '.join(args)
         else:
@@ -102,10 +105,24 @@ class ParsedRaw:
                 self.command = args[1]
                 if ' ' in self.command and self.command != ' ':
                     self.command = self.command.split()[0]
+
+                print ("SELF.TARGET CHECK")
+                print(self.target)
+                if self.target[0] != '#':
+                    print("LACKING HASHTAG, PM DETECTED, SWITCHING")
+                    self.target = self.nickname
+
+
+
+
         if ' ' in self.message:
             self.split_message = self.message.split()
         else:
             self.split_message = [self.message]
+
+
+
+
 
 
 @dataclass()
