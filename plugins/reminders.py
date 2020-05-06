@@ -40,6 +40,14 @@ def _get_reminder_text(conn, reminder_name):
         out = rem_row[0][1]
         return out
 
+def _check_reminder_exists(conn, reminder_name):
+
+    rem_row = db.get_row(conn, 'reminders', 'name', reminder_name)
+
+    if len(rem_row) == 0:
+        return False
+    else:
+        return True
 
 def _create_new_reminder(conn, rem_name, rem_text):
     """Is for creating new reminders in the db"""
@@ -55,7 +63,10 @@ def _create_new_reminder(conn, rem_name, rem_text):
 def _append_reminder(conn, rem_name, rem_text):
     """Is for appending to old reminders in the db"""
     old_rem_text = _get_reminder_text(conn, rem_name)
-    new_rem_text = f'{old_rem_text} and {rem_text}'
+    if old_rem_text == '':
+        new_rem_text = rem_text
+    else:
+        new_rem_text = f'{old_rem_text} and {rem_text}'
 
     rem_text_trunc = new_rem_text[:max_reminder_len]
 
@@ -64,6 +75,13 @@ def _append_reminder(conn, rem_name, rem_text):
                 str(int(time.time())), 'name', rem_name)
     db.ccache()
 
+def _clear_reminder(conn, rem_name):
+    """Is for appending to old reminders in the db"""
+
+    db.set_cell(conn, 'reminders', 'msg', '', 'name', rem_name)
+    db.set_cell(conn, 'reminders', 'last_updated',
+                str(int(time.time())), 'name', rem_name)
+    db.ccache()
 
 @hook.hook('init', ['reminit'])
 async def reminit(client):
@@ -97,17 +115,30 @@ async def addrem(client, data):
     rem_name = rem_name[:max_rem_name_len]
     rem_user_text = ' '.join(split[1:])
     rem_text = _get_reminder_text(conn, rem_name)
+    rem_check = _check_reminder_exists(conn, rem_name)
 
     print((f'REMINDER_DEBUG: rem_name: {rem_name},'
            f'rem_user_text: {rem_user_text}, rem_text: {rem_text}'))
 
-    if rem_text == '':
+    if rem_check == False:
         print(f'REMINDER_DEBUG: creating new reminder')
         _create_new_reminder(conn, rem_name, rem_user_text)
     else:
         print(f'REMINDER_DEBUG: appending to reminder')
         _append_reminder(conn, rem_name, rem_user_text)
 
+@hook.hook('command', ['forget'], admin=True)
+async def removerem(client, data):
+    """Is an admin only command for removing reminders"""
+    conn = client.bot.dbs[data.server]
+    split = data.split_message
+
+    if len(split) <= 0:
+        return
+    
+    reminder_name = split[0]
+    _clear_reminder(conn, reminder_name)
+    asyncio.create_task(client.message(data.target, f'Reminder {reminder_name} cleared.'))
 
 @hook.hook('event', ['PRIVMSG'])
 async def remind(client, data):
