@@ -29,7 +29,6 @@ def refresh_cache(inp):
         score = post.score.total.get_text()
         url = post.file.url
         rating = post.rating
-        tags = post.tags.general.join(", ")
         furry_cache.append((id, score, url, rating))
   random.shuffle(furry_cache)
   return
