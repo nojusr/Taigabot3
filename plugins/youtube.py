@@ -65,13 +65,24 @@ def _get_video_stats(yt_api_key, vid_id):
     duration_str = data['contentDetails']['duration']
     duration = _get_video_time(duration_str)
 
-    views = int(data['statistics']['viewCount'])
+    try:
+        views = int(data['statistics']['viewCount'])
+    except KeyError:
+        views = -1
 
-    likes = int(data['statistics']['likeCount'])
-    dislikes = int(data['statistics']['dislikeCount'])
+
+    try:
+        likes = int(data['statistics']['likeCount'])
+    except KeyError:
+        likes = -1
+
+    try:
+        dislikes = int(data['statistics']['dislikeCount'])
+    except KeyError:
+        dislikes = -1
+
 
     upload_date = data['snippet']['publishedAt']
-
     upload_datetime = dateutil.parser.parse(upload_date)
 
     # IRC formatting black magic
@@ -79,9 +90,23 @@ def _get_video_stats(yt_api_key, vid_id):
     # https://github.com/rossengeorgiev/pydle-irc/blob/master/pydle/colors.py
     out =  f'\02{title}\02'
     out += f' - length \02{duration}\02 - '
-    out += f'\x0309↑{likes:,}\x03, '
-    out += f'\x0304↓{dislikes:,}\x03 - '
-    out += f'\02{views:,}\02 views - \02{channel_name}\02 '
+
+
+    if likes == -1:
+        out += f'\x0309↑N\\A\x03, '
+    else:
+        out += f'\x0309↑{likes:,}\x03, '
+
+    if dislikes == -1:
+        out += f'\x0304↓N\\A\x03 - '
+    else:
+        out += f'\x0304↓{dislikes:,}\x03 - '
+
+    if views == -1:
+        out += f'\02N\\A\02 views - \02{channel_name}\02 '
+    else:
+        out += f'\02{views:,}\02 views - \02{channel_name}\02 '
+
     out += f'on \02{upload_datetime.year:04d}.{upload_datetime.month:02d}.'
     out += f'{upload_datetime.day:02d}\02'
     return out
@@ -104,8 +129,14 @@ async def ytsearch(client, data):
                  'API account and add it to the config file.')))
         return
 
-    req_params = {'part': 'snippet', 'key' : yt_key, 'maxResults': '1',
-                  'order': 'relevance', 'q': ' '.join(split) }
+    req_params = {
+        'part': 'snippet',
+        'key' : yt_key,
+        'maxResults': '1',
+        'order': 'relevance',
+        'q': ' '.join(split),
+        'type': 'video'
+    }
 
     r = requests.get(youtube_api_url, req_params)
 
@@ -134,7 +165,12 @@ async def ytsearch(client, data):
         print('YOUTUBE_DEBUG: failed to get first item in response ')
         return
 
-    vid_id = first_item['id']['videoId']
+    try:
+        vid_id = first_item['id']['videoId']
+    except KeyError:
+        print('YOUTUBE_DEBUG: failed to get videoID')
+        print(f'YOUTUBE_DEBUG: {first_item}')
+        return
 
     stats = _get_video_stats(yt_key, vid_id)
 
