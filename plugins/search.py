@@ -152,6 +152,13 @@ def _img_search(client, data, engine):
     return
 
 
+@hook.hook('command', ['wiki'])
+async def wikisearch(client, data):
+    """search via wikipedia"""
+    _search(client, data, 'wikipedia')
+    return
+
+
 @hook.hook('command', ['g'])
 async def gsearch(client, data):
     """search via google"""
