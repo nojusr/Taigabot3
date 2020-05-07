@@ -25,10 +25,10 @@ def refresh_cache(inp):
   posts = r.json()["posts"]
       for i in range(len(posts)):
         post = posts[i]
-        id = post.id.get_text()
-        score = post.score.total.get_text()
-        url = post.file.url
-        rating = post.rating
+        id = post["id"]
+        score = post["score"]["total"]
+        url = post["file"]["url"]
+        rating = post["rating"]
         furry_cache.append((id, score, url, rating))
   shuffle(furry_cache)
   return
