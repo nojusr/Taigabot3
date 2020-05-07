@@ -3,8 +3,6 @@
 | Command         | File       |
 |-----------------+------------|
 | 4ch             | 4chan      |
-| choose          | misc       |
-| countdown       | misc       |
 | dict, define    | dict       |
 | ping            | misc       |
 | spotify, sp     | spotify    |
@@ -118,6 +116,7 @@
 | t, time                       | ???                | t, time                      | location        |
 | ud, nig                       | urban              | ud, urban                    | urban           |
 | wiki                          | google             | wiki                         | search          |
+| choose, decide, countdown     | misc               | choose, decide, countdown    | misc            |
 
 ** events
 | Event        | File      | New Event    | New File |
