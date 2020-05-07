@@ -9,6 +9,7 @@
 | soundcloud, sc  | soundcloud |
 | url titles      | url        |
 | vim, vimeo      | vimeo      |
+| ver, host       | misc       |
 
 ** events
 | Events                                                         | File      |
