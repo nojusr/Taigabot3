@@ -23,13 +23,13 @@ def refresh_cache(inp):
   else:
     r = requests.get(f'http://e621.net/posts.json?limit=20&tags={search}', headers=headers)
   posts = r.json()["posts"]
-      for i in range(len(posts)):
-        post = posts[i]
-        id = post["id"]
-        score = post["score"]["total"]
-        url = post["file"]["url"]
-        rating = post["rating"]
-        furry_cache.append((id, score, url, rating))
+  for i in range(len(posts)):
+    post = posts[i]
+    id = post["id"]
+    score = post["score"]["total"]
+    url = post["file"]["url"]
+    rating = post["rating"]
+    furry_cache.append((id, score, url, rating))
   shuffle(furry_cache)
   return
 
