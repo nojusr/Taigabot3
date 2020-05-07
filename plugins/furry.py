@@ -30,7 +30,7 @@ def refresh_cache(inp):
         url = post.file.url
         rating = post.rating
         furry_cache.append((id, score, url, rating))
-  random.shuffle(furry_cache)
+  shuffle(furry_cache)
   return
 
 @hook.hook('command', ['furry', 'e621'])
