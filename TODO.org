@@ -112,12 +112,12 @@
 | q                             | quotes             | q                            | quotes          |
 | calc, wa                      | wolframalpha       | calc, math, wa,              | wolfram         |
 | tell                          | tell               | tell, showtells              | tell            |
-| g, gi,                        | google             | g, gi, sp, spi               | startpage       |
+| g, gi,                        | google             | g, gi, sp, ddg, ddgi, bing   | search          |
 | homescreen, waifu, desktop    | ???                | homescreen, waifu, desktop   | user-attributes |
 | yt, youtube                   | youtube            | yt, youtube                  | youtube         |
 | w, weather                    | ???                | w, weather                   | location        |
 | t, time                       | ???                | t, time                      | location        |
-| ud, nig                       | urban              | ud                           | urban           |
+| ud, nig                       | urban              | ud, urban                    | urban           |
 
 ** events
 | Event        | File      | New Event    | New File |
