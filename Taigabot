@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+
+# Standard Libs
+import asyncio
+import signal
+import ssl
+from pathlib import Path
+from typing import Dict, List
+
+# First Party
+from bot import Taigabot
+from core import data
+
+
+def ssl_context(cert: str = None, key: str = None,
+                verify: bool = True) -> ssl.SSLContext:
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    context.options |= ssl.OP_NO_SSLv2
+    context.options |= ssl.OP_NO_SSLv3
+    context.options |= ssl.OP_NO_TLSv1
+    context.load_default_certs()
+
+    if verify:
+        context.verify_mode = ssl.CERT_REQUIRED
+    if cert and key:
+        context.load_cert_chain(cert, keyfile=key)
+
+    return context
+
+
+async def main() -> None:
+    config_file = Path('.').resolve() / 'config.json'
+    config = data.Config(config_file)
+    for server_name, server_config in config.servers.items():
+        if server_config.ssl:
+            ssl = True
+        else:
+            ssl = False
+        if server_config.sasl_method == 'external':
+            if not server_config.ssl:
+                print('Must enable ssl to use external sasl.')
+            else:
+                cert = server_config.sasl_cert
+                key = server_config.sasl_key
+                ssl = ssl_context(cert, key)
+        bot = Taigabot(config, server_name, ssl)
+        bot_objects.append(bot)
+        bot_tasks[server_name] = bot.start()
+    await asyncio.gather(*bot_tasks.values())
+
+
+bot_tasks: Dict[str, Taigabot] = {}
+bot_objects: List[Taigabot] = []
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    for bot in bot_objects:
+        try:
+            bot.close_connection()
+        except RuntimeError:
+            pass
+
+# # Standard Libs
+# import os
+# import sys
+# from sqlite3 import Connection
+# from typing import Any, Dict, List
+
+# # First Party
+# from Taigabot3 import bot as Taigabot
+# from Taigabot3.core import config
+
+# # Third Party
+# import pydle
+
+# # list of dbs for closing
+# dbs: List[Connection] = []
+# # typing these here breaks flake8
+# restarted = False
+# bot = Taigabot.Bot()
+
+# try:
+#     server_configs: Dict[str, Any] = bot.config['servers']
+# except KeyError:
+#     print('No servers in config')
+#     sys.exit(0)
+
+# pool: pydle.client.ClientPool = pydle.ClientPool()
+# for server_name in bot.config['servers']:
+#     server: Dict[str, Any] = bot.config['servers'][server_name]
+#     if server:
+#         client: Taigabot.Client = Taigabot.Client(server['nick'])
+#     else:
+#         print('Invalid server config.')
+#         sys.exit(0)
+
+#     bot.clients.append(client)
+#     pool.connect(client, server['server'], tls=True, tls_verify=False)
+
+# try:
+#     pool.handle_forever()
+# except KeyboardInterrupt:
+#     print('Disconnecting clients.')
+#     for client in bot.clients:
+#         pool.disconnect(client)
+#     print('Saving and closing dbs.')
+#     for conn in list(bot.dbs.values()):
+#         conn.commit()
+#         conn.close()
+#     print('Saving config.')
+#     config.save(bot)
+#     if restarted:
+#         print('Restarting.')
+#         args: List[str] = sys.argv[:]
+#         args.insert(0, sys.executable)
+#         os.execv(sys.executable, args)
+#     else:
+#         print('Closing.')

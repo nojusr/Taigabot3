@@ -2,29 +2,32 @@
 
 # Standard Libs
 import json
-from typing import Any, Dict, Optional, Union
+from pathlib import Path
+from typing import Any, Dict, Tuple, Union
+
+Config = Dict[str, Any]
 
 
-def save(bot: Any) -> None:
+def save(config: Config, config_file: str) -> None:
     """Is used to save the specified config file."""
-    json.dump(bot.config, bot.config_file.open('w'), indent=2)
+    json.dump(config, Path(config_file).resolve().open('w'), indent=2)
     return None
 
 
-def load(bot: Any) -> Union[Exception, Dict[str, Any]]:
+def load(config_file: str) -> Union[Exception, Config]:
     """Is used to load the specified config file, use reload."""
-    return json.load(bot.config_file.open('r'))
+    return json.load(Path(config_file).resolve().open('r'))
 
 
-def reload(bot: Any) -> Optional[Exception]:
+def reload(config_file: str,
+           config_mtime: float) -> Union[Exception, Tuple[float, Config]]:
     """Is used to load/reload the config file."""
-    new_mtime: float = bot.config_file.stat().st_mtime
+    new_mtime: float = Path(config_file).resolve().stat().st_mtime
     try:
-        if bot.config_mtime != new_mtime:
-            if bot.config_mtime != 0.0:
+        if config_mtime != new_mtime:
+            if config_mtime != 0:
                 print('<<< Config Reloaded')
-            bot.config_mtime = new_mtime
-            bot.config = load(bot)
+            config = load(config_file)
     except KeyError as e:
         return e
-    return None
+    return new_mtime, config

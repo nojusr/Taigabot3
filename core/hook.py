@@ -1,26 +1,29 @@
 # Hooks for commands, events, sieves and exception catching.
 
 import functools
-from typing import Any, Callable, Dict, List, Union
+from typing import Callable, Dict, List, TypeVar, Union
 
-GenericPluginFunc = Callable[..., Any]
-GenericWrapperFunc = Callable[[GenericPluginFunc], GenericPluginFunc]
+CommandFunc = TypeVar('CommandFunc')
+Wrapper = Callable[[CommandFunc], CommandFunc]
+WrapperArgs = Dict[str, Union[List[str], bool]]
 
 
-def hook(hook_type: str,
-         arg: List[str],
-         admin: bool = False,
-         gadmin: bool = False,
-         autohelp: bool = False) -> GenericWrapperFunc:
+def hook(
+        hook_type: str,
+        arg: List[str],
+        admin: bool = False,
+        gadmin: bool = False,
+        autohelp: bool = False) -> Wrapper:
     """Is used for command, event, and sieve hooks."""
-    args: Dict[str, Union[List[str], bool]] = {}
+    args: WrapperArgs = {}
 
     def decorator(func):
+
         @functools.wraps(func)
-        def hook_wrapper(*args, **kwargs) -> GenericPluginFunc:
+        def hook_wrapper(*args, **kwargs) -> CommandFunc:
             return func(*args, **kwargs)
 
-        setattr(hook_wrapper, '__hook__', [hook_type, args])
+        hook_wrapper.__hook__ = [hook_type, args]
         return hook_wrapper
 
     args['name'] = arg

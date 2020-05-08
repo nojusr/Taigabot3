@@ -1,3 +1,7 @@
+* TODO
+- Take another look at the disable code
+- finish cleaning admin.py
+- refine typing?
 * To Add
 ** general commands
 | Command         | File       |

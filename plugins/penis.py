@@ -11,7 +11,7 @@ from core import hook
 async def penis3(client, data):
     """Is used to test threadding by sleeping."""
     print('penis')
-    time.sleep(30)
+    time.sleep(5)
     asyncio.create_task(client.message(data.target, 'penis'))
 
 
@@ -19,7 +19,7 @@ async def penis3(client, data):
 async def penis2(client, data):
     """Is used to test threadding by sleeping."""
     print('penis')
-    time.sleep(30)
+    time.sleep(5)
     asyncio.create_task(client.message(data.target, 'penis'))
 
 
@@ -37,7 +37,7 @@ async def hue(client, data):
     print(data)
     if data.command == 'hue2':
         print('penis')
-        asyncio.create_task(client.message(data.target, 'penis'))
+        asyncio.create_task(client.send_privmsg(data.target, 'penis'))
         return
     print('hue')
-    asyncio.create_task(client.message(data.target, 'hue'))
+    asyncio.create_task(client.send_privmsg(data.target, 'hue'))

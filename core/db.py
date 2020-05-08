@@ -69,16 +69,17 @@ def add_user(conn: Connection, nick: str, mask: str) -> Return:
     return set_row(conn, 'users', columns)
 
 
-def connect(bot: Any, server: str) -> None:
+def connect(db_dir: str, server: str) -> Connection:
     """Is used to connect to specified database."""
-    if not bot.db_dir.exists():
-        bot.db_dir.mkdir(parents=True)
-    db_file: Path = bot.db_dir / (server + '.db')
+    db_dir = Path(db_dir).resolve()
+    if not db_dir.exists():
+        db_dir.mkdir(parents=True)
+    db_file: Path = db_dir / (server + '.db')
     db: Connection = sqlite3.connect(
         db_file, timeout=1, check_same_thread=False)
     init_table(db, 'users', users_columns)
     init_table(db, 'channels', channel_columns)
-    bot.dbs[server] = db
+    return db
 
 
 def init_table(conn: Connection, tablename: str, columns: List[str]) -> Return:
@@ -111,9 +112,9 @@ def set_cell(conn: Connection, table: str, column: str, data: str,
              matchcolumn: str, matchvalue: str) -> Return:
     """IS used to add a cell to the database."""
     cursor = conn.cursor()
-    sql: str = f'UPDATE {table} SET {column}=? WHERE {matchcolumn}=?'
+    sql: str = f'UPDATE {table} SET {column} = ? WHERE {matchcolumn} = ?'
     with lock:
-        result: Execute = execute(cursor, conn, sql, (data, matchvalue, ))
+        result: Execute = execute(cursor, conn, sql, (data, matchvalue))
     ccache()
     if isinstance(result, Exception):
         return None
@@ -140,7 +141,7 @@ def get_cell(conn: Connection, table: str, column: str, matchcolumn: str,
              matchvalue: str) -> Return:
     """Is used to get a cell from the database."""
     cursor = conn.cursor()
-    sql: str = f'SELECT {column} FROM {table} WHERE {matchcolumn}=?'
+    sql: str = f'SELECT {column} FROM {table} WHERE {matchcolumn} = ?'
     with lock:
         result: Execute = execute(cursor, conn, sql, (matchvalue, ))
     if isinstance(result, Exception):
@@ -154,7 +155,7 @@ def get_row(conn: Connection, table: str, matchcolumn: str,
             matchvalue: str) -> Return:
     """Is used to get a whole row from the database."""
     cursor = conn.cursor()
-    sql: str = f'SELECT * FROM {table} WHERE {matchcolumn}=?'
+    sql: str = f'SELECT * FROM {table} WHERE {matchcolumn} = ?'
     with lock:
         result: Execute = execute(cursor, conn, sql, (matchvalue, ))
     if isinstance(result, Exception):
@@ -220,7 +221,7 @@ def get_table_names(conn: Connection) -> Optional[List[str]]:
 def execute(cursor: Cursor,
             conn: Connection,
             sql: str,
-            args: Optional[Tuple[Optional[str], ...]] = None) -> Execute:
+            args: Optional[Data] = None) -> Execute:
     """Is used to execute an sql query on the database."""
     try:
         result: Execute

@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "db_dir": "./persist/db/",
   "log_dir": "./persist/logs/",
   "valid_command_prefixes": [
@@ -56,4 +57,187 @@
       "server": "irc.rizon.net"
     }
   }
+=======
+    "db_dir": "./persist/db/",
+    "log_dir": "./persist/log/",
+    "plugin_dir": "./plugins/",
+    "valid_command_prefixes": [
+        ".",
+        ",",
+        "$",
+        "!",
+        "&",
+        "+",
+        "-"
+    ],
+    "api_keys": {
+        "": ""
+    },
+    "servers": {
+        "rizon": {
+            "command_prefix": ".",
+            "nickserv_nick": "nickserv",
+            "nickserv_command": "IDENTIFY {}",
+            "port": 6697,
+            "ssl": true,
+            "auto_reconnect": true,
+            "auto_reconnect_delay": 20,
+            "disabled": [],
+            "no_disable": [
+                "01-ignore-input",
+                "02-parse-destination-input",
+                "03-masshighlight-input",
+                "03-masshighlight-output",
+                "logger",
+                "genable",
+                "gdisable",
+                "gadmins"
+            ],
+            "no_log": [
+                "*",
+                "Global",
+                "py-ctcp",
+                "arteries",
+                "None"
+            ],
+            "ignored": [
+                "brobot@s.u.c.c",
+                "Waifu!Your@waifu.a.shit"
+            ],
+            "no_ignore": [
+                "arteries!~arteries@Rizon-CD9CCF54.know.cable.virginm.net",
+                "Taigabot!~Taigabot@Taigabot.uguu"
+            ],
+            "admins": [
+                "wednesday!Wednesday@Taiga-Best-Waifu.uguu"
+            ],
+            "channels": [
+                "#idlerpg",
+                "#arttest",
+                "#rizonirpg",
+                "#wednesday"
+            ],
+            "no_channels": [
+                "#chat"
+            ],
+            "capabilities": [
+                "sasl", "userhost-in-names", "multi-prefix"
+            ],
+            "owner": "wednesday",
+            "nickname": "TestTaiga",
+            "nickname_password": "",
+            "username": "TestTaiga",
+            "realname": "TestTaiga",
+            "server": "irc.rizon.net",
+            "server_password": "",
+            "sasl_method": "external",
+            "sasl_cert": "/home/wednesday/Taigabot3/Rizon.cer",
+            "sasl_key": "/home/wednesday/Taigabot3/Rizon.key"
+        },
+        "freenode": {
+            "command_prefix": ".",
+            "nickserv_nick": "nickserv",
+            "nickserv_command": "IDENTIFY {}",
+            "port": 6667,
+            "ssl": false,
+            "auto_reconnect": true,
+            "auto_reconnect_delay": 20,
+            "disabled": [
+                ""
+            ],
+            "no_disable": [
+                "logger",
+                "genable",
+                "gdisable",
+                "gadmins"
+            ],
+            "no_log": [
+                "*",
+                "Global",
+                "py-ctcp",
+                "arteries",
+                "None"
+            ],
+            "ignored": [
+                "brobot@s.u.c.c"
+            ],
+            "no_ignore": [
+                "Taigabot"
+            ],
+            "admins": [
+                "wednesday!wednesday@taiga-best-waifu.uguu"
+            ],
+            "channels": [
+                "#wednesday"
+            ],
+            "no_channels": [
+                "#homescreen"
+            ],
+            "capabilities": [
+                "identify-msg"
+            ],
+            "owner": "wednesday",
+            "nickname": "TestTaiga",
+            "nickname_password": "",
+            "username": "TestTaiga",
+            "realname": "TestTaiga",
+            "server": "irc.freenode.net",
+            "server_password": "",
+            "sasl_method": "",
+            "sasl_cert": "",
+            "sasl_key": ""
+        },
+        "espernet": {
+            "command_prefix": ".",
+            "nickserv_nick": "nickserv",
+            "nickserv_command": "IDENTIFY {}",
+            "port": 6697,
+            "ssl": true,
+            "auto_reconnect": true,
+            "auto_reconnect_delay": 20,
+            "disabled": [],
+            "no_disable": [
+                "01-ignore-input",
+                "02-parse-destination-input",
+                "03-masshighlight-input",
+                "03-masshighlight-output",
+                "logger",
+                "genable",
+                "gdisable",
+                "gadmins"
+            ],
+            "no_log": [
+                "*",
+                "Global",
+                "py-ctcp",
+                "arteries",
+                "None"
+            ],
+            "ignored": [],
+            "no_ignore": [],
+            "admins": [
+                "wednesday@*"
+            ],
+            "channels": [
+                "#wednesday"
+            ],
+            "no_channels": [
+                "#chat"
+            ],
+            "capabilities": [
+                "multi-prefix", "userhost-in-names"
+            ],
+            "owner": "wednesday",
+            "nickname": "TestTaiga",
+            "nickname_password": "",
+            "username": "TestTaiga",
+            "realname": "TestTaiga",
+            "server": "irc.esper.net",
+            "server_password": "",
+            "sasl_method": "",
+            "sasl_cert": "",
+            "sasl_key": ""
+        }
+    }
+>>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 }

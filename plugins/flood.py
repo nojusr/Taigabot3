@@ -11,31 +11,32 @@ from typing import Dict, List
 from core import db, hook
 from util import user
 
-msg_flooding: Dict[str, Dict[str, List[int]]] = {}
-cmd_flooding: Dict[str, Dict[str, List[int]]] = {}
+FloodDict = Dict[str, Dict[str, List[int]]]
+msg_flooding: FloodDict = {}
+cmd_flooding: FloodDict = {}
 
 
-async def _take_action(client, data, flood_rules, flood_type):
+async def _take_action(bot, msg, flood_rules, flood_type):
     """Is for warning, kicking, or banning flooding users."""
     message = (f'You are flooding, the flood rules are {flood_rules[0]} '
                f'{flood_type} per {flood_rules[1]} seconds.')
     if flood_rules[-1] == 'warn':
-        asyncio.create_task(client.notice(data.nickname, message))
+        asyncio.create_task(bot.notice(msg.user.nickname, message))
     elif flood_rules[-1] == 'kick':
         asyncio.create_task(
-            client.kick(data.target, data.nickname, reason=message))
+            bot.kick(msg.target, msg.user.nickname, reason=message))
     elif flood_rules[-1] == 'ban':
         asyncio.create_task(
-            client.kickban(data.target, data.nickname, reason=message))
-        s = sched.scheduler(time.perf_counter, time.sleep)
-        s.enter(60, 1, asyncio.create_task,
-                (client.unban(data.target, data.nickname)))
-        thread = threading.Thread(target=s.run)
+            bot.send_kickban(msg.target, msg.user.userhost, reason=message))
+        event = sched.scheduler(time.perf_counter, time.sleep)
+        event.enter(60, 1, asyncio.create_task, (bot.send_unban(
+            msg.target, msg.user.nickname)))
+        thread = threading.Thread(target=event.run)
         thread.daemon = True
         thread.start()
 
 
-async def _detect_flood(client, data, flood_rules, flood_type):
+async def _detect_flood(bot, msg, flood_rules, flood_type):
     """Is for detecting flooding users then taking action."""
     global msg_flooding
     global cmd_flooding
@@ -46,19 +47,20 @@ async def _detect_flood(client, data, flood_rules, flood_type):
         flood_dict = cmd_flooding
         flood_type = 'commands'
 
-    if data.target not in flood_dict:
-        flood_dict[data.target] = {}
-    if data.nickname not in flood_dict[data.target]:
-        flood_dict[data.target][data.nickname] = []
-    flooder = flood_dict[data.target][data.nickname]
+    if msg.target not in flood_dict:
+        flood_dict[msg.target] = {}
+    if msg.user.nickname not in flood_dict[msg.target]:
+        flood_dict[msg.target][msg.nickname] = []
+    flooder = flood_dict[msg.target][msg.user.nickname]
     now = time.perf_counter()
     flooder.append(now)
     flooder = [t for t in list(flooder) if now - t < int(flood_rules[1])]
     if len(flooder) > int(flood_rules[0]):
-        await _take_action(client, data, flood_rules, flood_type)
+        await _take_action(bot, msg, flood_rules, flood_type)
 
 
 @hook.hook('sieve', ['05-flood-input'])
+<<<<<<< HEAD
 async def flood_input_sieve(client, data):
     #Is for handling users who are flooding in the channel.
     conn = client.bot.dbs[data.server]
@@ -79,16 +81,36 @@ async def flood_input_sieve(client, data):
                            data.target)[0][0]
     cmdflood = db.get_cell(conn, 'channels', 'cmdflood', 'channel',
                            data.target)[0][0]
+=======
+async def flood_input_sieve(bot, msg):
+    """Is for handling users who are flooding in the channel."""
+    if not msg.user:
+        return msg
+    if msg.user.global_admin:
+        return msg
+    if msg.user.chan_admin or not msg.target:
+        return msg
+    if msg.target[0] != '#':
+        return msg
+
+    db.add_column(bot.db, 'channels', 'msgflood')
+    db.add_column(bot.db, 'channels', 'cmdflood')
+    prefix = db.get_cell(bot.db, 'channels', 'commandprefix', 'channel',
+                         msg.target)[0][0]
+    msgflood = db.get_cell(bot.db, 'channels', 'msgflood', 'channel',
+                           msg.target)[0][0]
+    cmdflood = db.get_cell(bot.db, 'channels', 'cmdflood', 'channel',
+                           msg.target)[0][0]
+>>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
     if msgflood:
         msgflood = msgflood.split()
-        asyncio.create_task(_detect_flood(client, data, msgflood, 'msg'))
-    if cmdflood and data.command and prefix:
-        if data.command[0] == prefix:
+        asyncio.create_task(_detect_flood(bot, msg, msgflood, 'msg'))
+    if cmdflood and msg.command and prefix:
+        if msg.command[0] == prefix:
             if cmdflood:
                 cmdflood = cmdflood.split()
-                asyncio.create_task(
-                    _detect_flood(client, data, cmdflood, 'cmd'))
-    return data
+                asyncio.create_task(_detect_flood(bot, msg, cmdflood, 'cmd'))
+    return msg
 
 
 async def _is_int(inp):

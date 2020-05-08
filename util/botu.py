@@ -8,8 +8,8 @@ from core import data, db
 
 
 async def add_to_channels(client: Any, data: data.ParsedRaw, conn: Connection,
-                          column: str, adding: str, existing: List[str],
-                          added_msg: str, already_msg: str):
+                          column: str, adding: str, existing: List[
+                              str], added_msg: str, already_msg: str):
     if adding in existing:
         asyncio.create_task(client.notice(data.nickname, already_msg))
     else:
@@ -56,8 +56,8 @@ async def add_to_conf(client: Any, data: data.ParsedRaw, adding: str,
 
 
 async def remove_from_conf(client: Any, data: data.ParsedRaw, removing: str,
-                           conf_value: List[str], removed_msg: str,
-                           notin_msg: str):
+                           conf_value: List[
+                               str], removed_msg: str, notin_msg: str):
     if removing not in conf_value:
         asyncio.create_task(client.notice(data.nickname, notin_msg))
     else:
@@ -133,8 +133,8 @@ async def valid_cmd_event_sieve_init(sieves, events, commands, inits,
     return sieves, events, commands, inits
 
 
-async def cmd_event_sieve_init_lists(client, data, disabled, nodisable, sieves,
-                                     events, commands, inits):
+async def cmd_event_sieve_init_lists(client, data, disabled, nodisable,
+                                     sieves, events, commands, inits):
     """Is for displaying a list of valid disables or enables."""
     if data.command in {'disable', 'gdisable'}:
         sieves, events, commands, inits = await valid_cmd_event_sieve_init(

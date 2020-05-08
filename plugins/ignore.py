@@ -9,31 +9,30 @@ from util import user
 
 
 @hook.hook('sieve', ['01-ignore-input'])
-async def ignore_sieve(client, data):
+async def ignore_sieve(bot, msg):
     """Is for ignoring messages from globally or channel ignored users."""
-    if not data.target:
-        return data
-    if data.mask in client.bot.config['servers'][data.server]['no_ignore']:
-        return data
+    if not msg.user:
+        return msg
+    if not msg.target:
+        return msg
+    if msg.user.userhost in bot.server_config.no_ignore:
+        return msg
 
-    conn = client.bot.dbs[data.server]
-    isignored = await user.is_ignored(client, conn, data.target, data.mask)
-    isadmin = await user.is_admin(client, conn, data.nickname, data.mask)
-
-    if await user.is_gadmin(client, data.server, data.mask):
-        return data
-    if await user.is_gignored(client, data.server, data.mask):
+    if msg.user.global_admin:
+        return msg
+    if msg.user.global_ignored:
         return None
 
-    if data.target[0] == '#' and data.raw_command != 'JOIN':
-        if isadmin:
-            return data
-        if isignored:
-            return None
+    if msg.target[0] == '#' and msg.raw_command != 'JOIN':
+        if msg.user.chan_admin:
+            return msg
+        if msg.target in msg.user.chan_ignored:
+            if msg.user.chan_ignored[msg.target]:
+                return None
 
-    if data.nickname.lower().endswith('bot'):
+    if msg.user.nickname.lower().endswith('bot'):
         return None
-    return data
+    return msg
 
 
 async def _parse_masks(client, data, conn, message):
@@ -74,8 +73,7 @@ async def g_un_gignore(client, data):
         asyncio.create_task(client.notice(data.nickname, f'{doc}'))
         return
 
-    ignored = asyncio.create_task(
-        client.bot.config['servers'][data.server]['ignored'])
+    ignored = client.bot.config['servers'][data.server]['ignored']
     if message[0] == 'list':
         if len(ignored) > 0:
             asyncio.create_task(

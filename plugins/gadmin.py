@@ -15,14 +15,16 @@ from util import botu, messaging, user
 
 
 @hook.hook('sieve', ['02-parse-destination-input'])
-async def parse_destination_sieve(client, data):
-    """Is used to parse [channel] desdination for gadmin commands."""
-    if not await user.is_gadmin(client, data.server, data.mask):
-        return data
+async def parse_destination_sieve(bot, msg):
+    """Is used to parse [channel] destination for gadmin commands."""
+    if not msg.user:
+        return msg
+    if not msg.user.global_admin:
+        return msg
 
-    if data.command is not None:
-        commands = client.bot.plugs['command']
-        command = data.command[1:]
+    if msg.command is not None:
+        commands = bot.plugins['command']
+        command = msg.command[1:]
         return_cmds = {'join', 'part', 'cycle', 'say', 'me', 'raw'}
 
         if command in commands and command not in return_cmds:
@@ -30,17 +32,17 @@ async def parse_destination_sieve(client, data):
                 adminonly = func.__hook__[1]['admin']
                 gadminonly = func.__hook__[1]['gadmin']
                 if not adminonly and not gadminonly:
-                    return data
+                    return msg
 
-                message = data.split_message
+                message = msg.split_message
                 try:
                     if message[1][0] == '#':
-                        data.target = message[1]
-                        data.split_message = message.remove(data.target)
-                        data.message = ' '.join(data.split_message)
+                        msg.target = message[1]
+                        msg.split_message = message.remove(msg.target)
+                        msg.message = ' '.join(msg.split_message)
                 except IndexError:
                     pass
-    return data
+    return msg
 
 
 @hook.hook('command', ['gdisable', 'genable'], gadmin=True, autohelp=True)
@@ -380,9 +382,9 @@ async def g_system(client, data):
     swap_free = await _conv_bytes(swap.free, gb=True)
     swap_per = swap.percent
 
-    p = psutil.Process()
-    with p.oneshot():
-        cwd = p.cwd()
+    proc = psutil.Process()
+    with proc.oneshot():
+        cwd = proc.cwd()
     duseage = psutil.disk_usage(cwd)
     disk_total = await _conv_bytes(duseage.total, gb=True)
     disk_used = await _conv_bytes(duseage.used, gb=True)
@@ -400,8 +402,8 @@ async def g_system(client, data):
     net_sent = await _conv_bytes(net.bytes_sent, gb=True)
     net_recv = await _conv_bytes(net.bytes_recv, gb=True)
     connections = len(psutil.net_connections())
-    last_boot = datetime.fromtimestamp(
-        psutil.boot_time()).strftime('%Y-%m-%d %H:%M:%S')
+    last_boot = datetime.fromtimestamp(psutil.boot_time()).strftime(
+        '%Y-%m-%d %H:%M:%S')
     total_procs = len(psutil.pids())
     netboot = (
         f'Network Data Sent: \x02{net_sent}\x02, Network Data Recieved:'
@@ -413,30 +415,30 @@ async def g_system(client, data):
 @hook.hook('command', ['bot'], gadmin=True)
 async def g_binfo(client, data):
     """.memory -- Shows the current memory usage."""
-    p = psutil.Process()
-    with p.oneshot():
-        pid = p.pid
-        cmdline = p.cmdline()
-        cwd = p.cwd()
-        username = p.username()
+    proc = psutil.Process()
+    with proc.oneshot():
+        pid = proc.pid
+        cmdline = proc.cmdline()
+        cwd = proc.cwd()
+        username = proc.username()
 
-        mem = p.memory_full_info()
+        mem = proc.memory_full_info()
         rss = await _conv_bytes(mem.rss)
         vms = await _conv_bytes(mem.vms)
         heap = await _conv_bytes(mem.data)
         stack = await _conv_bytes(mem.stack)
-        memper = p.memory_percent()
-        counter = p.io_counters()
+        memper = proc.memory_percent()
+        counter = proc.io_counters()
         read = await _conv_bytes(counter.read_count)
         write = await _conv_bytes(counter.write_count)
-        files = len(p.open_files())
+        files = len(proc.open_files())
 
-        connections = len(p.connections())
-        percent = p.cpu_percent()
-        threads = p.num_threads()
-        nice = p.nice()
-        aff = p.cpu_affinity()
-        num = p.cpu_num()
+        connections = len(proc.connections())
+        percent = proc.cpu_percent()
+        threads = proc.num_threads()
+        nice = proc.nice()
+        aff = proc.cpu_affinity()
+        num = proc.cpu_num()
 
     general = (f'Username: \x02{username}\x02, PID: \x02{pid}\x02, cmdline: '
                f'\x02{" ".join(cmdline)}\x02, cwd: \x02{cwd}\x02')

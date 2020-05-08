@@ -24,7 +24,8 @@ colors: Dict[str, str] = {
     'italic': '\x1D',
     'underline': '\x1F',
     'reverse': '\x16',
-    'reset': '\x0F'}
+    'reset': '\x0F'
+}
 
 
 async def action(client: Any, target: str, message: str) -> None:

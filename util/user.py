@@ -80,6 +80,7 @@ async def parse_masks(client: Any, conn: Connection, inp: str) -> List[str]:
     masks: List[str] = [
         await get_mask(client, conn, user)
         for user in split_inp
-        if await is_user(client, conn, user)]
+        if await is_user(client, conn, user)
+    ]
     masks.extend(mask for mask in split_inp if '@' in mask)
     return masks
