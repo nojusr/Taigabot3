@@ -1,63 +1,4 @@
 {
-<<<<<<< HEAD
-  "db_dir": "./persist/db/",
-  "log_dir": "./persist/logs/",
-  "valid_command_prefixes": [
-    ".",
-    "~"
-  ],
-  "api_keys": {
-    "last_fm": "XXXXXXXXXXXXXXXXXXXXXXXXXXXx",
-    "wolfram_alpha": "XXXXXXXXXXXXXXXXX",
-    "APIXU": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  },
-  "servers": {
-    "rizon": {
-      "disabled": [],
-      "no_disable": [
-        "01-ignore-input",
-        "02-parse-destination-input",
-        "03-masshighlight-input",
-        "03-masshighlight-output",
-        "logger",
-        "genable",
-        "gdisable",
-        "gadmins"
-      ],
-      "no_log": [
-        "*",
-        "Global",
-        "py-ctcp",
-        "paprika",
-        "None"
-      ],
-      "ignored": [
-        "brobot@s.u.c.c",
-        "Waifu!Your@waifu.a.shit"
-      ],
-      "no_ignore": [
-        "paprika!~nojus@lithuanian.internet.defence.force"
-      ],
-      "owner": "Kali_",
-      "admins": [
-        "Kali_!~nojus@lithuanian.internet.defence.force"
-      ],
-      "channels": [
-        "#kelp",
-        "#homescreen"
-      ],
-      "no_channels": [
-        "#chat"
-      ],
-      "command_prefix": ".",
-      "nick": "paprika",
-      "nickserv_password": "XXXXXXXXXXXXXXXXXXXXXXXX",
-      "nickserv_nick": "nickserv",
-      "nickserv_command": "IDENTIFY {}",
-      "server": "irc.rizon.net"
-    }
-  }
-=======
     "db_dir": "./persist/db/",
     "log_dir": "./persist/log/",
     "plugin_dir": "./plugins/",
@@ -239,5 +180,4 @@
             "sasl_key": ""
         }
     }
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 }
