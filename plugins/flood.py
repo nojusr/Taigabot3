@@ -60,28 +60,6 @@ async def _detect_flood(bot, msg, flood_rules, flood_type):
 
 
 @hook.hook('sieve', ['05-flood-input'])
-<<<<<<< HEAD
-async def flood_input_sieve(client, data):
-    #Is for handling users who are flooding in the channel.
-    conn = client.bot.dbs[data.server]
-    isadmin = await user.is_admin(client, conn, data.nickname, data.mask)
-
-    if await user.is_gadmin(client, data.server, data.mask):
-        return data
-    if isadmin or not data.target:
-        return data
-    if data.target[0] != '#':
-        return data
-
-    db.add_column(conn, 'channels', 'msgflood')
-    db.add_column(conn, 'channels', 'cmdflood')
-    prefix = db.get_cell(conn, 'channels', 'commandprefix', 'channel',
-                         data.target)[0][0]
-    msgflood = db.get_cell(conn, 'channels', 'msgflood', 'channel',
-                           data.target)[0][0]
-    cmdflood = db.get_cell(conn, 'channels', 'cmdflood', 'channel',
-                           data.target)[0][0]
-=======
 async def flood_input_sieve(bot, msg):
     """Is for handling users who are flooding in the channel."""
     if not msg.user:
@@ -101,7 +79,6 @@ async def flood_input_sieve(bot, msg):
                            msg.target)[0][0]
     cmdflood = db.get_cell(bot.db, 'channels', 'cmdflood', 'channel',
                            msg.target)[0][0]
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
     if msgflood:
         msgflood = msgflood.split()
         asyncio.create_task(_detect_flood(bot, msg, msgflood, 'msg'))

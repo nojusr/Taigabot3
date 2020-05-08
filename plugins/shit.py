@@ -51,7 +51,6 @@ async def sball(client, data):
         out += awnser
         out = f'\x01ACTION {out}\x01'
     asyncio.create_task(client.message(data.target, out))
-<<<<<<< HEAD
 
 
 @hook.hook('event', ['JOIN'])
@@ -63,5 +62,3 @@ async def abuse_kimi_and_ine(client, data):
         asyncio.create_task(client.message(data.target, '\x02[QUALITY OF CHANNEL SIGNIFICANTLY DECREASED]\x02'))
     
     
-=======
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8

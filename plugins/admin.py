@@ -41,17 +41,9 @@ async def whois(client, data):
                 f'~{channel}', f'&{channel}', f'@{channel}', f'%{channel}'
             ]
             if len([priv for priv in privilages if priv in message]) > 0:
-<<<<<<< HEAD
-                channels = client.bot.config['servers'][data
-                                                        .server]['channels']
-                if channel not in channels:
-                    channels.append(channel)
-                
-=======
                 channels = client.bot.config['servers'][
                     data.server]['channels']
                 channels.append(channel)
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
                 asyncio.create_task(
                     botu.add_to_conf(client, data, channel, channels,
                                      f'Joining {channel}.',

@@ -10,35 +10,17 @@
 #
 
 
-<<<<<<< HEAD
 from typing import Optional, Dict, Any, List, Set, Union, Callable, Tuple
 from dataclasses import dataclass, field
 import time
-=======
-# Standard Libs
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 import asyncio
 import random
 import time
 from typing import List
 
-<<<<<<< HEAD
 #import core db functions
 from core import db
 
-=======
-# First Party
-# import core db functions
-from core import db, hook
-
-# Third Party
-import requests
-
-# db table definition
-quote_columns: List[str] = [
-    'chan', 'nick', 'add_nick', 'msg', 'time', 'deleted'
-]
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
 #db table definition
 quote_columns: List[str] = ['chan', 'nick', 'add_nick', 'msg', 'time', 'deleted']
@@ -88,8 +70,6 @@ def display_quote(client, data, quotelist, target, arg):
         asyncio.create_task(client.message(data.target, f'I have no quotes for {target}'))
         return
 
-<<<<<<< HEAD
-=======
     if isinstance(search, int):
         try:
             quotes.append(quotelist[search])
@@ -108,7 +88,6 @@ def display_quote(client, data, quotelist, target, arg):
                 quotes.append(value)
                 quotenums.append(i + 1)
     _message_or_paste(client, data, quotenums, quotelist)
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
 
     if numarg != None:
@@ -176,9 +155,6 @@ async def quotes(client, data):
 
     tables = db.get_table_names(conn)
     if 'quotes' not in tables:
-<<<<<<< HEAD
-        asyncio.create_task(client.message(data.target, 'Quote table uninitialized. Please ask your nearest bot admin to run .qinit.'))
-=======
         asyncio.create_task(
             client.message(data.target, (
                 'Quote table uninitialized. Please ask your nearest bot'
@@ -193,7 +169,6 @@ async def quotes(client, data):
         return
     elif message[0] == 'del':
         quotes = db.get_row(conn, 'quotes', 'nick', data.nickname)
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
     #TODO: fix weird ass edgecase with users when a nick that corresponds to a command
 
@@ -219,8 +194,6 @@ async def quotes(client, data):
             except:
                 asyncio.create_task(client.message(data.target, 'You need to use a number when deleting quotes.'))
                 return
-<<<<<<< HEAD
-=======
             cur = conn.cursor()
             cur.execute(
                 "UPDATE quotes SET deleted='1' WHERE msg=? AND time=?",
@@ -229,7 +202,6 @@ async def quotes(client, data):
             conn.commit()
             db.ccache()
             asyncio.create_task(client.message(data.target, 'Quote deleted.'))
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
             nickquotes = remove_quotes(nickquotes)
             if len(nickquotes) > 0:

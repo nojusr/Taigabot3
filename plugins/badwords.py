@@ -12,17 +12,6 @@ from util import timeu, user
 
 
 @hook.hook('sieve', ['04-censor-badwords-output'])
-<<<<<<< HEAD
-async def badwords_output_sieve(client, server, command, args, kwargs):
-    #Is for stopping the bot saying bad words in channel.
-    if command == 'PRIVMSG':
-
-        kickwords = db.get_cell(client.bot.dbs[server], 'channels',
-                                'kickwords', 'channel', args[0])[0][0]
-        banwords = db.get_cell(client.bot.dbs[server], 'channels', 'banwords',
-                               'channel', args[0])[0][0]
-        message = args[1]
-=======
 async def badwords_output_sieve(bot, message):
     """Is for stopping the bot saying bad words in channel."""
     parsed = await bot.parse_message(message)
@@ -33,7 +22,6 @@ async def badwords_output_sieve(bot, message):
         banwords = db.get_cell(bot.db, 'channels', 'banwords', 'channel',
                                channel)[0][0]
         split_message = parsed[-1][-1].split()
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
         if kickwords:
             if ' ' in kickwords:
                 kickwords = kickwords.split()
@@ -55,36 +43,6 @@ async def badwords_output_sieve(bot, message):
 
 
 @hook.hook('sieve', ['04-disallow-badwords-input'])
-<<<<<<< HEAD
-async def badwords_input_sieve(client, data):
-    #Is used to return block inputs from users using bad words.
-    admin = await user.is_admin(client, client.bot.dbs[data.server],
-                                data.nickname, data.mask)
-    gadmin = await user.is_gadmin(client, data.server, data.mask)
-    db.add_column(client.bot.dbs[data.server], 'channels', 'kickwords')
-    db.add_column(client.bot.dbs[data.server], 'channels', 'banwords')
-
-    if not data.target or data.target[0] != '#' or gadmin or admin:
-        return data
-
-    db_prefix = db.get_cell(client.bot.dbs[data.server], 'channels',
-                            'commandprefix', 'channel', data.target)[0][0]
-    if data.command[0] != db_prefix:
-        return data
-
-    kickwords = db.get_cell(client.bot.dbs[data.server], 'channels',
-                            'kickwords', 'channel', data.target)
-    banwords = db.get_cell(client.bot.dbs[data.server], 'channels', 'banwords',
-                           'channel', data.target)
-    if kickwords:
-        kickwords = kickwords[0][0]
-        for word in kickwords.split(' '):
-            if word in data.message:
-                print (f'FOUND KICKWORD: \'{word}\'')
-                asyncio.create_task(
-                    client.notice(data.nickname, (f'I cannot say {word} in '
-                                                  f'{data.target}')))
-=======
 async def badwords_input_sieve(bot, msg):
     """Is used to block inputs from users using bad words."""
     if not msg.user:
@@ -115,26 +73,16 @@ async def badwords_input_sieve(bot, msg):
                     bot.send_notice([msg.user.nickname],
                                     (f'I cannot say {word} in'
                                      f'{msg.target}')))
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
     if banwords:
         banwords = banwords[0][0]
         for word in banwords.split(' '):
             word = ' '.join(word.split(':')[0:-1])
-<<<<<<< HEAD
-            if word in data.message:
-                print(f'FOUND BANWORD: \'{word}\'')
-                asyncio.create_task(
-                    client.notice(data.nickname, (f'I cannot say {word} in '
-                                                  f'{data.target}')))
-    return data
-=======
             if word in msg.split_message:
                 asyncio.create_task(
                     bot.send_notice([msg.user.nickname],
                                     (f'I cannot say {word} in'
                                      f'{msg.target}')))
     return msg
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
 
 @hook.hook('event', ['PRIVMSG'])
