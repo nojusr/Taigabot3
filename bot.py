@@ -1,24 +1,4 @@
-<<<<<<< HEAD
-#!/usr/local/bin/python3.7
-# Copyright (C) 2019  Anthony DeDominic <adedomin@gmail.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-"""Main file for running bot."""
-=======
 """Main file for running Taigabot."""
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
 # Standard Libs
 import asyncio
@@ -409,95 +389,6 @@ class Client():
         restarted = reset
         os.kill(os.getpid(), signal.SIGINT)
 
-<<<<<<< HEAD
-    async def message_handler(self, data: 'ParsedRaw') -> None:
-        """
-        Is used for running sieves, events and commands if applicable.
-
-        Runs sieves before everything, then events or commands,
-        depending on the information in data.
-        """
-        if not self.server_tag:
-            return
-
-        # get prefix before sieves to add channel to db
-        if data.target:
-            prefix: str = await self._get_prefix(data.target)
-        gdisabled: List[Optional[str]]
-        gdisabled = self.bot.config['servers'][self.server_tag]['disabled']
-        ndata: Optional['ParsedRaw'] = await self._run_sieves(data, gdisabled)
-        if not ndata:
-            return
-        data = ndata
-
-        asyncio.create_task(self._run_events(data, gdisabled))
-
-        if data.nickname in self.users:
-            asyncio.create_task(self._update_user(data.nickname, data.mask))
-        if not data.command:
-            return
-
-        if data.command[0] != prefix:
-            return
-
-        data.message = data.message.replace(data.command, '').strip()
-        data.split_message.remove(data.command)
-        data.command = data.command[1:]
-        if data.command.lower() in gdisabled:
-            #asyncio.create_task(
-                #self.notice(data.nickname, f'{data.command} is gdisabled.'))
-            return
-        asyncio.create_task(self._run_commands(data))
-
-    async def _update_user(self, user: str, mask: str) -> None:
-        """
-        Is used to update the users db information when they speak.
-
-        Runs before sieves so ignored users are in the db.
-        If user not in db, adds them, otherwise update nick,
-        or mask if needed.
-        """
-        if user == self.nickname:
-            return
-        conn: Connection = self.bot.dbs[self.server_tag]
-
-        db_mask: DBResult = db.get_cell(conn, 'users', 'mask', 'nick', user)
-        db_nick: DBResult = db.get_cell(conn, 'users', 'nick', 'mask', mask)
-
-        if not db_mask or not db_nick:
-            db.add_user(conn, user, mask)
-            return
-        else:
-            same_mask = (db_mask[0][0] == mask)
-            same_nick = (db_nick[0][0] == user)
-            # if mask changed
-            if not same_mask and same_nick:
-                db.set_cell(conn, 'users', 'mask', mask, 'nick', user)
-            # if nick changed
-            if same_mask and not same_nick:
-                db.set_cell(conn, 'users', 'nick', user, 'mask', mask)
-
-    async def _run_events(self, data: 'ParsedRaw',
-                          gdisabled: List[Optional[str]]) -> None:
-        """IS used for running all the events if not disabled."""
-        events: CommandEventPlugsDict = self.bot.plugs['event']
-        if data.raw_command in events:
-            for func in events[data.raw_command]:
-                if func.__name__.lower() not in gdisabled:
-                    asyncio.create_task(func(self, data))
-        if '*' in events:
-            for func in events['*']:
-                if func.__name__.lower() not in gdisabled:
-                    asyncio.create_task(func(self, data))
-
-    async def _run_inits(self, gdisabled: List[Optional[str]]) -> None:
-        """IS used for running all the events if not disabled."""
-        inits: InitDict = self.bot.plugs['init']
-        for init in inits.values():
-            for func in init:
-                if func.__name__.lower() not in gdisabled:
-                    asyncio.create_task(func(self))
-=======
     # async def message_handler(self, data: 'ParsedRaw') -> None:
     #     """
     #     Is used for running sieves, events and commands if applicable.
@@ -587,7 +478,6 @@ class Client():
     #         for func in init:
     #             if func.__name__.lower() not in gdisabled:
     #                 asyncio.create_task(func(self))
->>>>>>> ea6f341077c6add8bfdcaed5119610c323799ad8
 
     async def _run_commands(self, data: 'ParsedRaw') -> None:
         """
